@@ -12,27 +12,81 @@
 	<body>
     <canvas id="canvas" height="500" width="500"></canvas>
     <script>
-      var canvas = document.getElementById('canvas');
-      var ratio = window.devicePixelRatio;
+      function Canvas(el) {
+        this.canvas = document.querySelector(el);
+        this.ctx = null;
+        this.halfWidth = null;
+        this.halfHeight = null;
 
-      var oldWidth = canvas.width;
-      var oldHeight = canvas.height;
+        this._init();
+      }
 
-      var width = canvas.width = oldWidth * ratio;
-      var height = canvas.height = oldHeight * ratio;
+      Canvas.prototype.drawArc = function(start, end, radius) {
+        var x = end.x;
+        var y = end.y;
+        var hw = this.halfWidth;
+        var hh = this.halfHeight;
 
-      canvas.style.width = oldWidth + 'px';
-      canvas.style.height = oldHeight + 'px';
+        var ctx = this.ctx;
 
+        ctx.beginPath();
 
-      var halfWidth = width >> ratio;
-      var halfHeight = height >> ratio;
+        if (start) {
+          ctx.moveTo(start.x + hw, start.y + hh);
+        }
+
+        ctx.arcTo(x + hw, y + hh, radius, 0, PI_2, false);
+        ctx.closePath();
+        ctx.strokeStyle = LJColor.getDirectionalColor(x, y);
+        ctx.stroke();
+      };
+
+      Canvas.prototype._init = function() {
+        if (!'getContext' in this.canvas) {
+          alert('Your browser doesnt support this.')
+        }
+
+        this.ctx = this.canvas.getContext('2d');
+
+        // Scale for retina screens
+        this._scale();
+
+        this.halfWidth = this.canvas.width / 2;
+        this.halfHeight = this.canvas.height / 2;
+
+      };
+
+      Canvas.prototype._scale = function() {
+        var scalingRatio = window.devicePixelRatio;
+
+        // Wer are on a standard res screen and dont need to scale.
+        if (scalingRatio === 1) {
+          return;
+        }
+
+        var oldWidth = this.canvas.width;
+        var oldHeight = this.canvas.height;
+
+        this.canvas.width = oldWidth * scalingRatio;
+        this.canvas.height = oldHeight * scalingRatio;
+
+        this.canvas.style.width = oldWidth + 'px';
+        this.canvas.style.height = oldHeight + 'px';
+
+        this.ctx.scale(scalingRatio, scalingRatio);
+      };
+
+      var canvas = new Canvas('#canvas');
         
-      var scaledRatio = ratio * 3.5;  
-      var AMPLITUDE = (height / scaledRatio) < (width / scaledRatio) ? height / scaledRatio : width / scaledRatio;
+      var scaledRatio = 2.5;
+
+
+
+      var AMPLITUDE = (canvas.canvas.height / scaledRatio) < (canvas.canvas.width / scaledRatio) ? canvas.canvas.height / scaledRatio : canvas.canvas.width / scaledRatio;
+console.log(AMPLITUDE)
       var SLASHED_ZERO = Math.PI / 180;
       var SLASHED_ZERO_B = Math.PI / 2
-      var PI_2 = Math.PI*0.05;
+      var PI_2 = Math.PI * 2;
 
       var a = 3;
       var b = 4;
@@ -53,9 +107,12 @@
           damping = num;
         };
 
-        dampen = function(value, t) {
+        this.dampen = function(value, t) {
+          t = t || 0;
+          value = value || 0;
+
           return Math.pow(E, (-this.getDamping * t)) * value;
-        }
+        };
       }
 
 
@@ -66,38 +123,12 @@
         };
 
         // multiplying and diving these outputs changes the height and width of the curve
-        vector.x = (AMPLITUDE * Math.sin(a * t + SLASHED_ZERO));
-        vector.y = (AMPLITUDE * Math.sin(b * t));
+        vector.x = (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO));
+        vector.y = (AMPLITUDE * Math.sin(b * t * SLASHED_ZERO));
 
         return vector;
       };
 
-      var drawArc = function(startVector, endVector, offsetVector) {
-        x = endVector.x;
-        y = endVector.y;
-        hw = halfWidth;
-        hh = halfHeight;
-
-        ctx.beginPath();
-        if (startVector) {
-          ctx.moveTo(startVector.x + hw, startVector.y + hh);
-        }
-
-        if (offsetVector) {
-          hw = offsetVector.x
-          hh = offsetVector.y
-        }
-
-        ctx.arcTo(x + hw, y + hh, radius, 0, PI_2, false);
-        ctx.closePath();
-        ctx.strokeStyle = LJColor.getDirectionalColor(x, y);
-        ctx.stroke();
-      };
-
-
-      var ctx = canvas.getContext('2d');
-      ctx.scale(ratio, ratio);
-      
 
       // control line thickness. lower is thinner
       var radius = 1;
@@ -114,8 +145,7 @@
         vector = lissajous(a,b,t);
         
 
-        drawArc(lastVector, vector);
-        drawArc(lastVector, vector, {x: halfWidth - 20, y: halfHeight - 20});
+        canvas.drawArc(lastVector, vector, radius);
 
         if (t <= 360) {
           window.requestAnimationFrame(draw);
