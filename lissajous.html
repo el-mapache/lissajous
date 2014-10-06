@@ -66,15 +66,15 @@
         };
 
         // multiplying and diving these outputs changes the height and width of the curve
-        vector.x = (AMPLITUDE * Math.sin(a * t + SLASHED_ZERO));
-        vector.y = (AMPLITUDE * Math.sin(b * t));
+        vector.x = (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO));
+        vector.y = (AMPLITUDE * Math.sin(b * t * SLASHED_ZERO));
 
         return vector;
       };
 
-      var drawArc = function(startVector, endVector, offsetVector) {
-        x = endVector.x;
-        y = endVector.y;
+      var drawArc = function(startVector, endVector) {
+        var x = endVector.x;
+        var y = endVector.y;
         hw = halfWidth;
         hh = halfHeight;
 
@@ -83,12 +83,9 @@
           ctx.moveTo(startVector.x + hw, startVector.y + hh);
         }
 
-        if (offsetVector) {
-          hw = offsetVector.x
-          hh = offsetVector.y
-        }
+        ctx.arcTo(x + hw, y + hh, radius, 0, 0);
 
-        ctx.arcTo(x + hw, y + hh, radius, 0, PI_2, false);
+        //ctx.arc(x + hw, y + hh, radius, 0, PI_2, false);
         ctx.closePath();
         ctx.strokeStyle = LJColor.getDirectionalColor(x, y);
         ctx.stroke();
@@ -108,14 +105,14 @@
       var lastVector = null;
 
       var draw = function() {
-        t += 1;
+        t += 2;
         
         lastVector = vector;
         vector = lissajous(a,b,t);
         
 
         drawArc(lastVector, vector);
-        drawArc(lastVector, vector, {x: halfWidth - 20, y: halfHeight - 20});
+        
 
         if (t <= 360) {
           window.requestAnimationFrame(draw);
