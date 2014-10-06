@@ -8,88 +8,23 @@
       }
     </style>
     <script src="colors.js"></script>
+    <script src="canvas.js"></script>
 	</head>
 	<body>
     <canvas id="canvas" height="500" width="500"></canvas>
     <script>
-      function Canvas(el) {
-        this.canvas = document.querySelector(el);
-        this.ctx = null;
-        this.halfWidth = null;
-        this.halfHeight = null;
-
-        this._init();
-      }
-
-      Canvas.prototype.drawArc = function(start, end, radius) {
-        var x = end.x;
-        var y = end.y;
-        var hw = this.halfWidth;
-        var hh = this.halfHeight;
-
-        var ctx = this.ctx;
-
-        ctx.beginPath();
-
-        if (start) {
-          ctx.moveTo(start.x + hw, start.y + hh);
-        }
-
-        ctx.arcTo(x + hw, y + hh, radius, 0, PI_2, false);
-        ctx.closePath();
-        ctx.strokeStyle = LJColor.getDirectionalColor(x, y);
-        ctx.stroke();
-      };
-
-      Canvas.prototype._init = function() {
-        if (!'getContext' in this.canvas) {
-          alert('Your browser doesnt support this.')
-        }
-
-        this.ctx = this.canvas.getContext('2d');
-
-        // Scale for retina screens
-        this._scale();
-
-        this.halfWidth = this.canvas.width / 2;
-        this.halfHeight = this.canvas.height / 2;
-
-      };
-
-      Canvas.prototype._scale = function() {
-        var scalingRatio = window.devicePixelRatio;
-
-        // Wer are on a standard res screen and dont need to scale.
-        if (scalingRatio === 1) {
-          return;
-        }
-
-        var oldWidth = this.canvas.width;
-        var oldHeight = this.canvas.height;
-
-        this.canvas.width = oldWidth * scalingRatio;
-        this.canvas.height = oldHeight * scalingRatio;
-
-        this.canvas.style.width = oldWidth + 'px';
-        this.canvas.style.height = oldHeight + 'px';
-
-        this.ctx.scale(scalingRatio, scalingRatio);
-      };
-
-      var canvas = new Canvas('#canvas');
+      var canvas = new LJCanvas('#canvas');
         
-      var scaledRatio = 2.5;
+      var scaledRatio = 5;
 
+      var AMPLITUDE = (canvas.height() / scaledRatio) < (canvas.width() / scaledRatio) ? canvas.height() / scaledRatio : canvas.width() / scaledRatio;
 
-
-      var AMPLITUDE = (canvas.canvas.height / scaledRatio) < (canvas.canvas.width / scaledRatio) ? canvas.canvas.height / scaledRatio : canvas.canvas.width / scaledRatio;
-console.log(AMPLITUDE)
       var SLASHED_ZERO = Math.PI / 180;
       var SLASHED_ZERO_B = Math.PI / 2
       var PI_2 = Math.PI * 2;
 
-      var a = 3;
-      var b = 4;
+      var a = 5;
+      var b = 6;
 
 
       function Damper() {
@@ -115,23 +50,23 @@ console.log(AMPLITUDE)
         };
       }
 
-
+      var damper = new Damper();
       var lissajous = function(a,b,t, amplitude) {
         var vector = {
           x: null,
           y: null
         };
-
+        // adding or multiplying by pi/2 spiros
         // multiplying and diving these outputs changes the height and width of the curve
-        vector.x = (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO));
-        vector.y = (AMPLITUDE * Math.sin(b * t * SLASHED_ZERO));
+        vector.x = AMPLITUDE * Math.sin(a * t * SLASHED_ZERO);
+        vector.y = AMPLITUDE * Math.sin(b * t * SLASHED_ZERO);
 
         return vector;
       };
 
 
       // control line thickness. lower is thinner
-      var radius = 1;
+      var radius =1;
       
       var t = 0;
       
@@ -139,11 +74,10 @@ console.log(AMPLITUDE)
       var lastVector = null;
 
       var draw = function() {
-        t += 1;
+        t += 2;
         
         lastVector = vector;
         vector = lissajous(a,b,t);
-        
 
         canvas.drawArc(lastVector, vector, radius);
 
@@ -154,7 +88,7 @@ console.log(AMPLITUDE)
 
       window.requestAnimationFrame(draw);
       
-
+      
       /* we need 
         
         Start X
@@ -173,6 +107,7 @@ console.log(AMPLITUDE)
       //   var vector = lissajous(a,b,t);
       //   drawArc(vector);
       // }
-    </script>
+
+     </script>
 	</body>
 </html>
