@@ -23,10 +23,16 @@
     if (start) {
       ctx.moveTo(start.x + hw, start.y + hh);
     }
+    var color = LJColor.getDirectionalColor(x, y);
 
     ctx.arcTo(x + hw, y + hh, radius, 0, 0);
+    ctx.lineWidth = 5;
     ctx.closePath();
-    ctx.strokeStyle = LJColor.getDirectionalColor(x, y);
+    ctx.strokeStyle = color;
+    ctx.shadowBlur = 30;
+    ctx.shadowColor = color;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
     ctx.stroke();
   };
 

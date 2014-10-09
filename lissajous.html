@@ -12,19 +12,64 @@
 	</head>
 	<body>
     <canvas id="canvas" height="500" width="500"></canvas>
+    <div>
+      <label for="x">x-axis degree</label>
+      <input id="x" name="x-degree" type="range" min="0" max="360" step="1" value="2"/>
+    </div>
+
+    <div>
+      <label for="y">y-axis degree</label>
+      <input id="y" name="y" type="range" min="0" max="360" step="1" value="3"/>
+    </div>
+
+    <div>
+      <label for="scale">scale</label>
+      <input id="scale" name="scale" type="range" step="0.5" min="0" max="200" value="4.5"/>
+    </div>
+
+    <div>
+      <label for="time">time</label>
+      <input id="time" name="time" type="range" step="0.1" min="0" max="30" value="0.1"/>
+    </div>
     <script>
+      var a, b;
+
+      document.getElementById('x').addEventListener('input', function(event) {
+        a = event.target.value;
+        reset();
+        draw();
+      });
+
+      document.getElementById('y').addEventListener('input', function(event) {
+        b = event.target.value;
+        reset();
+        draw();
+      });
+
+      document.getElementById('scale').addEventListener('input', function(event) {
+        scale = event.target.value;
+        reset();
+        draw();
+      });
+
+      document.getElementById('time').addEventListener('input', function(event) {
+        timeStep = +event.target.value;
+        reset();
+        draw();
+      });
+
       var canvas = new LJCanvas('#canvas');
         
-      var scaledRatio = 5;
+      var scale = 12.5;
 
-      var AMPLITUDE = (canvas.height() / scaledRatio) < (canvas.width() / scaledRatio) ? canvas.height() / scaledRatio : canvas.width() / scaledRatio;
+      var AMPLITUDE = (canvas.height() / scale) < (canvas.width() / scale) ? canvas.height() / scale : canvas.width() / scale;
 
       var SLASHED_ZERO = Math.PI / 180;
       var SLASHED_ZERO_B = Math.PI / 2
       var PI_2 = Math.PI * 2;
 
-      var a = 5;
-      var b = 6;
+      var a = 223;
+      var b = 306;
 
 
       function Damper() {
@@ -64,20 +109,41 @@
         return vector;
       };
 
+      var lissajous2 = function(a,b,t, amplitude) {
+        var vector = {
+          x: null,
+          y: null
+        };
+        // adding or multiplying by pi/2 spiros
+        // multiplying and diving these outputs changes the height and width of the curve
+        vector.x = Math.pow(Math.E, (-0.004 * t)) * (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO_B));
+        vector.y = Math.pow(Math.E, (-0.004 * t)) * (AMPLITUDE * Math.sin(b * t));
+
+        return vector;
+      };
+
 
       // control line thickness. lower is thinner
-      var radius =1;
+      var radius = 100;
       
       var t = 0;
-      
+      var timeStep = 5;
       var vector = {x: 0, y: 0};
       var lastVector = null;
 
+      function reset() {
+        t = 0;
+        vector = {x: 0, y: 0};
+        lastVector = null;
+        canvas.ctx.clearRect(0,0,canvas.width(), canvas.height());
+        AMPLITUDE = (canvas.height() / scale) < (canvas.width() / scale) ? canvas.height() / scale : canvas.width() / scale;
+      }
+
       var draw = function() {
-        t += 2;
+        t += timeStep;
         
         lastVector = vector;
-        vector = lissajous(a,b,t);
+        vector = lissajous2(a,b,t);
 
         canvas.drawArc(lastVector, vector, radius);
 
