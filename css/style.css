@@ -1,0 +1,135 @@
+.m-left-20 {
+  margin-left: 20px; }
+
+.m-left-40 {
+  margin-left: 40px; }
+
+.m-left-60 {
+  margin-left: 60px; }
+
+.m-top-20 {
+  margin-top: 20px; }
+
+.m-top-40 {
+  margin-top: 40px; }
+
+.m-top-60 {
+  margin-top: 60px; }
+
+.m-right-20 {
+  margin-right: 20px; }
+
+.m-right-40 {
+  margin-right: 40px; }
+
+.m-right-60 {
+  margin-right: 60px; }
+
+.m-bottom-20 {
+  margin-bottom: 20px; }
+
+.m-bottom-40 {
+  margin-bottom: 40px; }
+
+.m-bottom-60 {
+  margin-bottom: 60px; }
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+/**
+ * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
+ * http://cssreset.com
+*/
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block; }
+
+body {
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after, q:before, q:after {
+  content: '';
+  content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+.grid {
+  background: white;
+  margin: 0 0 20 0; }
+  .grid:after {
+    /* Or @extend clearfix */
+    content: "";
+    display: table;
+    clear: both; }
+
+[class*='col-'] {
+  float: left;
+  padding-right: 20px; }
+  .grid [class*='col-']:last-of-type {
+    padding-right: 0; }
+
+.col-2-3 {
+  width: 66.66%; }
+
+.col-1-3 {
+  width: 33.33%; }
+
+.col-1-2 {
+  width: 50%; }
+
+.col-1-4 {
+  width: 25%; }
+
+.col-1-8 {
+  width: 12.5%; }
+
+.offset-2-3 {
+  margin-left: 66.66%; }
+
+.offset-1-3 {
+  margin-left: 33.33%; }
+
+.offset-1-2 {
+  margin-left: 50%; }
+
+.offset-1-4 {
+  margin-left: 25%; }
+
+.offset-1-8 {
+  margin-left: 12.5%; }
+
+/* Opt-in outside padding */
+.grid-pad {
+  padding: 20 0 20 20; }
+  .grid-pad [class*='col-']:last-of-type {
+    padding-right: 20px; }
+
+.oscilloscope {
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  border-style: solid;
+  border-width: 3px;
+  border-top-width: 6px;
+  border-bottom-width: 6px;
+  border-color: #333; }

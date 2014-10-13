@@ -1,129 +1,163 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<style>
-      canvas {
-        margin: 40px 0px 0px 40px;
-        border: 1px solid;
-      }
-    </style>
+    <link rel="stylesheet" href="css/style.css"></link>
+    <script src="node_modules/react/dist/react.js"</script>
     <script src="colors.js"></script>
+    <script src="canvas.js"></script>
 	</head>
 	<body>
-    <canvas id="canvas" height="500" width="500"></canvas>
+    <div id="oscilloscope-view"></div>
+    <div id="controls"></div>
+
+<!--     <div>
+      <label for="x">x-axis degree</label>
+      <input id="x" name="x-degree" type="range" min="0" max="360" step="1" value="2"/>
+    </div>
+
+    <div>
+      <label for="y">y-axis degree</label>
+      <input id="y" name="y" type="range" min="0" max="360" step="1" value="3"/>
+    </div>
+
+    <div>
+      <label for="scale">scale</label>
+      <input id="scale" name="scale" type="range" step="0.5" min="0" max="200" value="4.5"/>
+    </div>
+
+    <div>
+      <label for="time">time</label>
+      <input id="time" name="time" type="range" step="0.1" min="0" max="30" value="0.1"/>
+    </div> -->
+   <!-- <script src="build/canvas/canvas.js"</script>-->
+    <script src="build/controls/controls.js"</script>
     <script>
-      var canvas = document.getElementById('canvas');
-      var ratio = window.devicePixelRatio;
+      // var a, b;
 
-      var oldWidth = canvas.width;
-      var oldHeight = canvas.height;
+      // document.getElementById('x').addEventListener('input', function(event) {
+      //   a = event.target.value;
+      //   reset();
+      //   draw();
+      // });
 
-      var width = canvas.width = oldWidth * ratio;
-      var height = canvas.height = oldHeight * ratio;
+      // document.getElementById('y').addEventListener('input', function(event) {
+      //   b = event.target.value;
+      //   reset();
+      //   draw();
+      // });
 
-      canvas.style.width = oldWidth + 'px';
-      canvas.style.height = oldHeight + 'px';
+      // document.getElementById('scale').addEventListener('input', function(event) {
+      //   scale = event.target.value;
+      //   reset();
+      //   draw();
+      // });
 
+      // document.getElementById('time').addEventListener('input', function(event) {
+      //   timeStep = +event.target.value;
+      //   reset();
+      //   draw();
+      // });
 
-      var halfWidth = width >> ratio;
-      var halfHeight = height >> ratio;
-        
-      var scaledRatio = ratio * 3.5;  
-      var AMPLITUDE = (height / scaledRatio) < (width / scaledRatio) ? height / scaledRatio : width / scaledRatio;
-      var SLASHED_ZERO = Math.PI / 180;
-      var SLASHED_ZERO_B = Math.PI / 2
-      var PI_2 = Math.PI*0.05;
+      // var canvas = new LJCanvas('#canvas');
 
-      var a = 3;
-      var b = 4;
+      // var scale = 12.5;
 
+      // var AMPLITUDE = (canvas.height() / scale) < (canvas.width() / scale) ? canvas.height() / scale : canvas.width() / scale;
 
-      function Damper() {
-        // Euler's constant
-        var E = Math.E;
+      // var SLASHED_ZERO = Math.PI / 180;
+      // var SLASHED_ZERO_B = Math.PI / 2
+      // var PI_2 = Math.PI * 2;
 
-        // reduce curve over time;
-        var damping = 0.004;
-
-        this.getDamping = function() {
-          return damping;
-        };
-
-        this.setDamping = function(num) {
-          damping = num;
-        };
-
-        dampen = function(value, t) {
-          return Math.pow(E, (-this.getDamping * t)) * value;
-        }
-      }
+      // var a = 223;
+      // var b = 306;
 
 
-      var lissajous = function(a,b,t, amplitude) {
-        var vector = {
-          x: null,
-          y: null
-        };
+      // function Damper() {
+      //   // Euler's constant
+      //   var E = Math.E;
 
-        // multiplying and diving these outputs changes the height and width of the curve
-        vector.x = (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO));
-        vector.y = (AMPLITUDE * Math.sin(b * t * SLASHED_ZERO));
+      //   // reduce curve over time;
+      //   var damping = 0.004;
 
-        return vector;
-      };
+      //   this.getDamping = function() {
+      //     return damping;
+      //   };
 
-      var drawArc = function(startVector, endVector) {
-        var x = endVector.x;
-        var y = endVector.y;
-        hw = halfWidth;
-        hh = halfHeight;
+      //   this.setDamping = function(num) {
+      //     damping = num;
+      //   };
 
-        ctx.beginPath();
-        if (startVector) {
-          ctx.moveTo(startVector.x + hw, startVector.y + hh);
-        }
+      //   this.dampen = function(value, t) {
+      //     t = t || 0;
+      //     value = value || 0;
 
-        ctx.arcTo(x + hw, y + hh, radius, 0, 0);
+      //     return Math.pow(E, (-this.getDamping * t)) * value;
+      //   };
+      // }
 
-        //ctx.arc(x + hw, y + hh, radius, 0, PI_2, false);
-        ctx.closePath();
-        ctx.strokeStyle = LJColor.getDirectionalColor(x, y);
-        ctx.stroke();
-      };
+      // var damper = new Damper();
+      // var lissajous = function(a,b,t, amplitude) {
+      //   var vector = {
+      //     x: null,
+      //     y: null
+      //   };
+      //   // adding or multiplying by pi/2 spiros
+      //   // multiplying and diving these outputs changes the height and width of the curve
+      //   vector.x = (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO));
+      //   vector.y = (AMPLITUDE * Math.sin(b * t * SLASHED_ZERO));
 
 
-      var ctx = canvas.getContext('2d');
-      ctx.scale(ratio, ratio);
-      
+      //   return vector;
+      // };
 
-      // control line thickness. lower is thinner
-      var radius = 1;
-      
-      var t = 0;
-      
-      var vector = {x: 0, y: 0};
-      var lastVector = null;
+      // var lissajous2 = function(a,b,t, amplitude) {
+      //   var vector = {
+      //     x: null,
+      //     y: null
+      //   };
+      //   // adding or multiplying by pi/2 spiros
+      //   // multiplying and diving these outputs changes the height and width of the curve
+      //   vector.x = Math.pow(Math.E, (-0.004 * t)) * (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO_B));
+      //   vector.y = Math.pow(Math.E, (-0.004 * t)) * (AMPLITUDE * Math.sin(b * t));
 
-      var draw = function() {
-        t += 2;
-        
-        lastVector = vector;
-        vector = lissajous(a,b,t);
-        
+      //   return vector;
 
-        drawArc(lastVector, vector);
-        
+      // };
 
-        if (t <= 360) {
-          window.requestAnimationFrame(draw);
-        }
-      };
 
-      window.requestAnimationFrame(draw);
-      
+      // // control line thickness. lower is thinner
+      // var radius = 100;
+
+      // var t = 0;
+      // var timeStep = 5;
+      // var vector = {x: 0, y: 0};
+      // var lastVector = null;
+
+      // function reset() {
+      //   t = 0;
+      //   vector = {x: 0, y: 0};
+      //   lastVector = null;
+      //   canvas.ctx.clearRect(0,0,canvas.width(), canvas.height());
+      //   AMPLITUDE = (canvas.height() / scale) < (canvas.width() / scale) ? canvas.height() / scale : canvas.width() / scale;
+      // }
+
+      // var draw = function() {
+      //   t += timeStep;
+
+      //   lastVector = vector;
+      //   vector = lissajous2(a,b,t);
+      //   canvas.drawArc(lastVector, vector, radius);
+
+      //   if (t <= 360) {
+      //     window.requestAnimationFrame(draw);
+      //   }
+      // };
+
+      // window.requestAnimationFrame(draw);
+
 
       /* we need 
-        
+
         Start X
         Start Y
         A - x curve number
@@ -140,6 +174,8 @@
       //   var vector = lissajous(a,b,t);
       //   drawArc(vector);
       // }
-    </script>
+
+     </script>
+
 	</body>
 </html>
