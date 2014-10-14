@@ -20,15 +20,15 @@ $margins: left top right bottom;
 }
 
 @each $side in $margins {
-  @for $i from 1 to 4 {
-    $offset: $pad * $i;
+  @for $i from 1 to 6 {
+    $offset: 10 * $i;
     .m-#{$side}-#{$offset} {
       margin-#{$side}: #{$offset}px;
     }
   }
 }
 
-* {
+*, *:before, *:after {
   @include box-sizing(border-box);
 }
 
@@ -151,6 +151,13 @@ table {
   [class*='col-']:last-of-type {
     padding-right: #{$pad}px;
   }
+}
+
+/* END GRID */
+
+
+label {
+  display: block;
 }
 
 .oscilloscope {
