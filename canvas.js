@@ -38,7 +38,7 @@
 
   Canvas.prototype._init = function() {
     if (!('getContext' in this.canvas)) {
-      alert('Your browser doesnt support this.')
+      alert('Your browser doesn\'t support canvas.')
     }
 
     this.ctx = this.canvas.getContext('2d');

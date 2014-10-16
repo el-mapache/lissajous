@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<style>
+  <head>
+    <style>
       canvas {
         margin: 40px 0px 0px 40px;
         border: 1px solid;
       }
+
+      input {
+        width: 400px;
+      }
     </style>
     <script src="colors.js"></script>
     <script src="canvas.js"></script>
-	</head>
-	<body>
+  </head>
+  <body>
     <canvas id="canvas" height="500" width="500"></canvas>
     <div>
       <label for="x">x-axis degree</label>
@@ -117,14 +121,14 @@
         // adding or multiplying by pi/2 spiros
         // multiplying and diving these outputs changes the height and width of the curve
         vector.x = Math.pow(Math.E, (-0.004 * t)) * (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO_B));
-        vector.y = Math.pow(Math.E, (-0.004 * t)) * (AMPLITUDE * Math.sin(b * t));
+        vector.y = Math.pow(Math.E, (-0.001 * t)) * (AMPLITUDE * Math.sin(b * t));
 
         return vector;
       };
 
 
       // control line thickness. lower is thinner
-      var radius = 100;
+      var radius = 1;
       
       var t = 0;
       var timeStep = 5;
@@ -175,5 +179,5 @@
       // }
 
      </script>
-	</body>
+  </body>
 </html>
