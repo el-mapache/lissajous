@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+      canvas {
+        margin: 40px 0px 0px 40px;
+        border: 1px solid;
+      }
+    </style>
+    <script src="colors.js"></script>
+    <script src="canvas.js"></script>
+	</head>
+	<body>
+    <canvas id="canvas" height="500" width="500"></canvas>
+    <div>
+      <label for="x">x-axis degree</label>
+      <input id="x" name="x-degree" type="range" min="0" max="360" step="1" value="2"/>
+    </div>
+
+    <div>
+      <label for="y">y-axis degree</label>
+      <input id="y" name="y" type="range" min="0" max="360" step="1" value="3"/>
+    </div>
+
+    <div>
+      <label for="scale">scale</label>
+      <input id="scale" name="scale" type="range" step="0.5" min="0" max="200" value="4.5"/>
+    </div>
+
+    <div>
+      <label for="time">time</label>
+      <input id="time" name="time" type="range" step="0.1" min="0" max="30" value="0.1"/>
+    </div>
+    <script>
+      var a, b;
+
+      document.getElementById('x').addEventListener('input', function(event) {
+        a = event.target.value;
+        reset();
+        draw();
+      });
+
+      document.getElementById('y').addEventListener('input', function(event) {
+        b = event.target.value;
+        reset();
+        draw();
+      });
+
+      document.getElementById('scale').addEventListener('input', function(event) {
+        scale = event.target.value;
+        reset();
+        draw();
+      });
+
+      document.getElementById('time').addEventListener('input', function(event) {
+        timeStep = +event.target.value;
+        reset();
+        draw();
+      });
+
+      var canvas = new LJCanvas('#canvas');
+        
+      var scale = 12.5;
+
+      var AMPLITUDE = (canvas.height() / scale) < (canvas.width() / scale) ? canvas.height() / scale : canvas.width() / scale;
+
+      var SLASHED_ZERO = Math.PI / 180;
+      var SLASHED_ZERO_B = Math.PI / 2
+      var PI_2 = Math.PI * 2;
+
+      var a = 223;
+      var b = 306;
+
+
+      function Damper() {
+        // Euler's constant
+        var E = Math.E;
+
+        // reduce curve over time;
+        var damping = 0.004;
+
+        this.getDamping = function() {
+          return damping;
+        };
+
+        this.setDamping = function(num) {
+          damping = num;
+        };
+
+        this.dampen = function(value, t) {
+          t = t || 0;
+          value = value || 0;
+
+          return Math.pow(E, (-this.getDamping * t)) * value;
+        };
+      }
+
+      var damper = new Damper();
+      var lissajous = function(a,b,t, amplitude) {
+        var vector = {
+          x: null,
+          y: null
+        };
+        // adding or multiplying by pi/2 spiros
+        // multiplying and diving these outputs changes the height and width of the curve
+        vector.x = AMPLITUDE * Math.sin(a * t * SLASHED_ZERO);
+        vector.y = AMPLITUDE * Math.sin(b * t * SLASHED_ZERO);
+
+        return vector;
+      };
+
+      var lissajous2 = function(a,b,t, amplitude) {
+        var vector = {
+          x: null,
+          y: null
+        };
+        // adding or multiplying by pi/2 spiros
+        // multiplying and diving these outputs changes the height and width of the curve
+        vector.x = Math.pow(Math.E, (-0.004 * t)) * (AMPLITUDE * Math.sin(a * t * SLASHED_ZERO_B));
+        vector.y = Math.pow(Math.E, (-0.004 * t)) * (AMPLITUDE * Math.sin(b * t));
+
+        return vector;
+      };
+
+
+      // control line thickness. lower is thinner
+      var radius = 100;
+      
+      var t = 0;
+      var timeStep = 5;
+      var vector = {x: 0, y: 0};
+      var lastVector = null;
+
+      function reset() {
+        t = 0;
+        vector = {x: 0, y: 0};
+        lastVector = null;
+        canvas.ctx.clearRect(0,0,canvas.width(), canvas.height());
+        AMPLITUDE = (canvas.height() / scale) < (canvas.width() / scale) ? canvas.height() / scale : canvas.width() / scale;
+      }
+
+      var draw = function() {
+        t += timeStep;
+        
+        lastVector = vector;
+        vector = lissajous2(a,b,t);
+
+        canvas.drawArc(lastVector, vector, radius);
+
+        if (t <= 360) {
+          window.requestAnimationFrame(draw);
+        }
+      };
+
+      window.requestAnimationFrame(draw);
+      
+      
+      /* we need 
+        
+        Start X
+        Start Y
+        A - x curve number
+        B - y curve number
+        amplitude - variable
+        radius - variable
+        damping - variable, switchable on both x and y
+        time - speed (or how clear the line is)
+        start degree - how chunky the line is
+
+        !also! store the last vector to draw the line?
+      */
+      // for (var t = 0; t <= 360; t += 0.1) {
+      //   var vector = lissajous(a,b,t);
+      //   drawArc(vector);
+      // }
+
+     </script>
+	</body>
+</html>
