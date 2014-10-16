@@ -8,7 +8,7 @@ var Lissajous = function(width, height) {
   var x = 2;
   var y = 3;
   var time = 0;
-  var timeStep = 0.1;
+  var timeStep = 2;
   var radius = 1;
   var startVector = {};
   var amplitude = (height / scale) < (width / scale) ? height / scale : width / scale;
@@ -49,7 +49,11 @@ var Lissajous = function(width, height) {
 
   // Applies an optional rotation
   function rotateBy(period, operator, rotation) {
-    var fn = OPERATORS[operator] || function noop() {};
+    var fn = OPERATORS[operator];
+
+    if (!fn) {
+      return period;
+    }
 
     return fn(period, rotation);
   }
@@ -57,15 +61,16 @@ var Lissajous = function(width, height) {
   // Where curve is defined as the inital value optionally rotated
   // by some fixed amount.
   function buildCurve(period) {
-    return amplitude * Math.sin(curve);
+    return amplitude * Math.sin(period * SLASHED_ZERO_A);
   }
 
   // Dampens the motion of one point of a vector.
   function dampen(point, time, damping) {
     damping = damping || -0.004;
-    return Math.pow(Math.E, damping * t) * axis;
+    return Math.pow(Math.E, damping * t) * point;
   }
 
+  this.timeStep = timeStep;
   this.get = function(prop) {
     return prop || null;
   };
@@ -81,7 +86,8 @@ var Lissajous = function(width, height) {
   };
 
   this.transform = function(value, time) {
-    dampen(buildCurve(rotateBy(intialPeriod(value, time),'*', DOUBLE_PI)),time);
+    return buildCurve(value, time);
+    return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
   };
 };
 

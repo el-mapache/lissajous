@@ -40,6 +40,8 @@
     return convertHsvToRgb(hue, 2, 1);
   };
 
+  module.exports = LJColor;
+
   return root.LJColor;
 }(window))
 ;
