@@ -1,3 +1,5 @@
+var Colors = require('./colors.js');
+
 var Canvas = function(el) {
   this.canvas = document.querySelector(el);
   this.ctx = null;
@@ -20,7 +22,7 @@ Canvas.prototype.drawArc = function(start, end, radius) {
   if (start) {
     ctx.moveTo(start.x + hw, start.y + hh);
   }
-  var color = LJColor.getDirectionalColor(x, y);
+  var color = Colors.getDirectionalColor(x, y);
 
   ctx.arcTo(x + hw, y + hh, radius, 0, 0);
   ctx.lineWidth = 5;
@@ -56,14 +58,14 @@ Canvas.prototype._scale = function() {
     return;
   }
 
-  var oldWidth = this.canvas.width;
-  var oldHeight = this.canvas.height;
+  var oldWidth = getComputedStyle(this.canvas).getPropertyValue('width').replace('px','');
+  var oldHeight = getComputedStyle(this.canvas).getPropertyValue('height').replace('px','');
 
   this.canvas.width = oldWidth * scalingRatio;
   this.canvas.height = oldHeight * scalingRatio;
 
-  // this.canvas.style.width = oldWidth + 'px';
-  // this.canvas.style.height = oldHeight + 'px';
+  this.canvas.style.width = oldWidth;
+  this.canvas.style.height = oldHeight;
 
   this.ctx.scale(scalingRatio, scalingRatio);
 };

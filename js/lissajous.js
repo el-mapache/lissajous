@@ -8,7 +8,7 @@ var Lissajous = function(width, height) {
   var x = 2;
   var y = 3;
   var time = 0;
-  var timeStep = 2;
+  var timeStep = 1;
   var radius = 1;
   var startVector = {};
   var amplitude = (height / scale) < (width / scale) ? height / scale : width / scale;
@@ -86,7 +86,7 @@ var Lissajous = function(width, height) {
   };
 
   this.transform = function(value, time) {
-    return buildCurve(value, time);
+    return buildCurve(initialPeriod(value, time));
     return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
   };
 };

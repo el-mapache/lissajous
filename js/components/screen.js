@@ -2,9 +2,15 @@
 var React = require('react');
 
 var Screen = React.createClass({
+  componentDidMount: function() {
+    this.setState({
+      canvas: new this.props.canvas(this.getDOMNode().id)
+    });
+  },
+
   render: function() {
     return (
-      <canvas className="oscilloscope col-1-2 offset-1-4 m-top-40" id="canvas" height="auto"></canvas>
+      <canvas className="oscilloscope col-full m-top-20" id="canvas" height="auto"></canvas>
     );
   }
 });

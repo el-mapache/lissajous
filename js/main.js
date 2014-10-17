@@ -48,23 +48,25 @@ var controls = [
 ];
 
 var React = require('react');
+var Casing = require('./components/casing.js');
 var ControlGroup = require('./components/controls/controls.js');
 var Screen = require('./components/screen.js');
 var Lissajous = require('./lissajous.js');
+
 var Color = require('./colors.js');
 var Canvas = require('./canvas.js');
 
-React.renderComponent(
-  <ControlGroup controls={controls} />,
-  document.getElementById('controls')
-);
+// React.renderComponent(
+//   <ControlGroup controls={controls} />,
+//   document.getElementById('controls')
+// );
 
 React.renderComponent(
-  <Screen />,
-  document.getElementById('oscilloscope-view')
+  <Casing canvas={Canvas} />,
+  document.body
 );
 
-var canvas = new Canvas('#canvas');
+
 
 
 var vector = {x: 0, y: 0};
@@ -72,12 +74,12 @@ var lastVector = null;
 
 var l = new Lissajous(canvas.width(), canvas.height());
 t = 0;
+
 var draw = function() {
   t += l.timeStep;
 
   lastVector = vector;
-  vector = {x: l.transform(2, t), y: l.transform(3,t)};
-
+  vector = {x: l.transform(1, t), y: l.transform(2,t)};
   canvas.drawArc(lastVector, vector, 1);
 
   if (t <= 360) {
