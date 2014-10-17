@@ -3,6 +3,8 @@ $black: #333;
 $off-white: #eeeeef;
 $blue: #00ff9d;
 $pad: 20;
+$gridWidth: 1200;
+$singleColumn: 12.5;
 
 $margins: left top right bottom;
 
@@ -65,6 +67,7 @@ footer, header, hgroup, menu, nav, section {
 
 body {
   line-height: 1;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 ol, ul {
@@ -88,6 +91,7 @@ table {
 
 // poor man's grid from css tricks + myself
 .grid {
+  width: 1200px;
   background: white;
   margin: 0 0 $pad 0;
   &:before {
@@ -135,12 +139,25 @@ table {
   width: 50%;
 }
 
+.col-3-8 {
+  width: 37.5%;
+}
+
 .col-1-4 {
   width: 25%;
 }
 
-.col-1-8 {
-  width: 12.5%;
+@for $iterator from 1 to 8 {
+  .col-#{$iterator}-8 {
+    width: percentage((12.5 * $iterator)/$gridWidth);
+  }
+}
+
+@for $column from 1 to 8 {
+  $offset: 12.5 * $column;
+  .offset-#{$column}-8 {
+    margin-left: percentage($offset/$gridWidth);
+  }
 }
 
 .offset-2-3 {
@@ -161,10 +178,6 @@ table {
 
 .offset-1-4 {
   margin-left: 25%;
-}
-
-.offset-1-8 {
-  margin-left: 12.5%;
 }
 
 /* Opt-in outside padding */
@@ -192,8 +205,6 @@ label {
 
 .oscilloscope {
   @include border-radius(12px);
-
-  //background-color: blue;
 
   border-style: solid;
   border-width: 3px;

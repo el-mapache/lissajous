@@ -56,16 +56,12 @@ var Lissajous = require('./lissajous.js');
 var Color = require('./colors.js');
 var Canvas = require('./canvas.js');
 
-// React.renderComponent(
-//   <ControlGroup controls={controls} />,
-//   document.getElementById('controls')
-// );
+
 
 React.renderComponent(
   <Casing canvas={Canvas} />,
   document.body
 );
-
 
 
 

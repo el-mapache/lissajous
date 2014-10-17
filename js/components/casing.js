@@ -5,13 +5,15 @@ var Screen = require('./screen.js');
 var LissajousCollection = require('./lissajous-collection.js');
 var NewButton = require('./new-button.js');
 
+var Collection = LissajousCollection.collection;
+
 var Casing = React.createClass({
   componentDidMount: function() {
   },
 
 	render: function() {
 		return (
-      <div className="grid">
+      <div className="grid m-top-20">
         <div className="col-1-2">
           <Screen canvas={this.props.canvas}  />
           <div className="grid">
@@ -20,8 +22,8 @@ var Casing = React.createClass({
             </div>
           </div>
         </div>
-        <div className="col-1-3">
-          <LissajousCollection />
+        <div className="col-1-4 offset-1-8">
+          <Collection />
         </div>
       </div>
     );

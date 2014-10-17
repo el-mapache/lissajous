@@ -140,13 +140,15 @@ var Screen = require('./screen.js');
 var LissajousCollection = require('./lissajous-collection.js');
 var NewButton = require('./new-button.js');
 
+var Collection = LissajousCollection.collection;
+
 var Casing = React.createClass({displayName: 'Casing',
   componentDidMount: function() {
   },
 
 	render: function() {
 		return (
-      React.DOM.div({className: "grid"}, 
+      React.DOM.div({className: "grid m-top-20"}, 
         React.DOM.div({className: "col-1-2"}, 
           Screen({canvas: this.props.canvas}), 
           React.DOM.div({className: "grid"}, 
@@ -155,8 +157,8 @@ var Casing = React.createClass({displayName: 'Casing',
             )
           )
         ), 
-        React.DOM.div({className: "col-1-3"}, 
-          LissajousCollection(null)
+        React.DOM.div({className: "col-1-4 offset-1-8"}, 
+          Collection(null)
         )
       )
     );
@@ -229,11 +231,16 @@ module.exports = ControlGroup;
 /** @jsx React.DOM */
 
 var React = require('react');
+var s = {
+  border: "1px solid blue"
+};
 
 var LissajousCollection = React.createClass({displayName: 'LissajousCollection',
 	render: function() {
 		return (
-      React.DOM.div(null)
+      React.DOM.div({class: "col-1-4 offset-1-8"}, 
+        LissajousView(null)
+      )
     );
 	}
 });
@@ -241,13 +248,19 @@ var LissajousCollection = React.createClass({displayName: 'LissajousCollection',
 var LissajousView = React.createClass({displayName: 'LissajousView',
   render: function() {
     return (
-      React.DOM.div(null)
+      React.DOM.div({class: "col-full", style: {
+        background: "rgb(98,194,229)",
+        color: "rgb(239, 236, 218)",
+        padding: "4px"
+      }}, "Lissajous 1")
     );
   }
 });
 
-module.exports = LissajousCollection;
-module.exports = LissajousView;
+module.exports = {
+  collection: LissajousCollection,
+  view: LissajousView
+};
 },{"react":"CwoHg3"}],6:[function(require,module,exports){
 /** @jsx React.DOM */
 
@@ -279,7 +292,7 @@ var Screen = React.createClass({displayName: 'Screen',
 
   render: function() {
     return (
-      React.DOM.canvas({className: "oscilloscope col-full m-top-20", id: "canvas", height: "auto"})
+      React.DOM.canvas({className: "oscilloscope col-full", id: "canvas", height: "auto"})
     );
   }
 });
@@ -345,16 +358,12 @@ var Lissajous = require('./lissajous.js');
 var Color = require('./colors.js');
 var Canvas = require('./canvas.js');
 
-// React.renderComponent(
-//   <ControlGroup controls={controls} />,
-//   document.getElementById('controls')
-// );
+
 
 React.renderComponent(
   Casing({canvas: Canvas}),
   document.body
 );
-
 
 
 

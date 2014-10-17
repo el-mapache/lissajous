@@ -10,7 +10,7 @@ var Screen = React.createClass({
 
   render: function() {
     return (
-      <canvas className="oscilloscope col-full m-top-20" id="canvas" height="auto"></canvas>
+      <canvas className="oscilloscope col-full" id="canvas" height="auto"></canvas>
     );
   }
 });
