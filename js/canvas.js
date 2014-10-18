@@ -1,7 +1,7 @@
 var Colors = require('./colors.js');
 
 var Canvas = function(el) {
-  this.canvas = document.querySelector(el);
+  this.canvas = typeof el === "String" ? document.querySelector(el) : el;
   this.ctx = null;
   this.halfWidth = null;
   this.halfHeight = null;
@@ -20,7 +20,8 @@ Canvas.prototype.drawArc = function(start, end, radius) {
   ctx.beginPath();
 
   if (start) {
-    ctx.moveTo(start.x + hw, start.y + hh);
+   // ctx.moveTo(start.x + hw, start.y + hh);
+    ctx.moveTo(start.x - (hw/4), start.y - (hh/4));
   }
   var color = Colors.getDirectionalColor(x, y);
 
@@ -64,8 +65,8 @@ Canvas.prototype._scale = function() {
   this.canvas.width = oldWidth * scalingRatio;
   this.canvas.height = oldHeight * scalingRatio;
 
-  this.canvas.style.width = oldWidth;
-  this.canvas.style.height = oldHeight;
+  this.canvas.style.width = oldWidth+"px";
+  this.canvas.style.height = oldHeight+"px";
 
   this.ctx.scale(scalingRatio, scalingRatio);
 };

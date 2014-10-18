@@ -59,28 +59,6 @@ var Canvas = require('./canvas.js');
 
 
 React.renderComponent(
-  <Casing canvas={Canvas} />,
+  <Casing canvas={Canvas} curves={[]} count={0} />,
   document.body
 );
-
-
-
-var vector = {x: 0, y: 0};
-var lastVector = null;
-
-var l = new Lissajous(canvas.width(), canvas.height());
-t = 0;
-
-var draw = function() {
-  t += l.timeStep;
-
-  lastVector = vector;
-  vector = {x: l.transform(1, t), y: l.transform(2,t)};
-  canvas.drawArc(lastVector, vector, 1);
-
-  if (t <= 360) {
-    window.requestAnimationFrame(draw);
-  }
-};
-
-window.requestAnimationFrame(draw);

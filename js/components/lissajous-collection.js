@@ -1,28 +1,38 @@
 /** @jsx React.DOM */
 
 var React = require('react');
-var s = {
-  border: "1px solid blue"
-};
 
 var LissajousCollection = React.createClass({
-	render: function() {
+  render: function() {
+    var _curves = [];
+
+    this.props.curves.forEach(function(obj,i) {
+      _curves.push(LissajousView({key: i+1}));
+    });
+
 		return (
-      <div class="col-1-4 offset-1-8">
-        <LissajousView />
+      <div className="col-1-4 offset-1-8" style={{"border-left": "2px solid orange"}}>
+        {_curves}
       </div>
     );
 	}
 });
 
+var styles = {
+  background: "rgb(98,194,229)",
+  color: "#efefef",
+  padding: "4px",
+  letterSpacing: "0.05em"
+};
+
 var LissajousView = React.createClass({
   render: function() {
     return (
-      <div class="col-full" style={{
-        background: "rgb(98,194,229)",
-        color: "rgb(239, 236, 218)",
-        padding: "4px"
-      }}>Lissajous 1</div>
+      <div className="grid">
+        <div className="col-5-8" style={styles}>
+          Lissajous {this.props.key}
+        </div>
+      </div>
     );
   }
 });

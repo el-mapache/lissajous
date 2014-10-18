@@ -4,7 +4,7 @@
 
 var Lissajous = function(width, height) {
   var VALID_OPERATORS = ['+', '*'];
-  var scale = 12.5;
+  var scale = 1.5;
   var x = 2;
   var y = 3;
   var time = 0;
@@ -71,6 +71,7 @@ var Lissajous = function(width, height) {
   }
 
   this.timeStep = timeStep;
+
   this.get = function(prop) {
     return prop || null;
   };
@@ -87,7 +88,7 @@ var Lissajous = function(width, height) {
 
   this.transform = function(value, time) {
     return buildCurve(initialPeriod(value, time));
-    return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
+    //return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
   };
 };
 
