@@ -8,8 +8,8 @@ var draw = function(vector, lastVector, curve) {
 
   lastVector = vector;
   vector = {
-    x: curve.transform(1, time),
-    y: curve.transform(2,time)
+    x: curve.transform(1, time, 'circle'),
+    y: curve.transform(2, time)
   };
 
   this._canvas().drawArc(lastVector, vector, 1);
@@ -18,15 +18,17 @@ var draw = function(vector, lastVector, curve) {
     window.requestAnimationFrame(draw.bind(this, vector, lastVector, curve));
   } else {
     time = 0;
-    window.cancelAnimationFrame(this.longId);
+    window.cancelAnimationFrame(this.state.animationId);
+    this.setState({animationId: null});
   }
 };
 
 var Screen = React.createClass({
-  longId: null,
   getInitialState: function() {
     return {
-      curves: this.props.curves
+      curves:      this.props.curves,
+      isAnimating: false,
+      animationId: null
     };
   },
 
@@ -36,17 +38,8 @@ var Screen = React.createClass({
     });
   },
 
-  _curves: function() {
-    return this.state.curves;
-  },
-
-  _canvas: function() {
-    return this.state.canvas;
-  },
-
-  shouldComponentUpdate: function(newState, oldState) {
-    //perform animations, but dont rerender
-    var curves = newState.curves;
+  componentWillReceiveProps: function(nextState) {
+    var curves = nextState.curves;
 
     if (curves.length === 0) {
       return true;
@@ -58,8 +51,15 @@ var Screen = React.createClass({
     var vector     = {x: 0, y: 0},
         lastVector = null;
 
-    this.longId = window.requestAnimationFrame(draw.bind(this, vector, lastVector, curve));
+    var id = window.requestAnimationFrame(draw.bind(this, vector, lastVector, curve));
 
+    this.setState({
+      animationId: id
+    });
+  },
+
+  shouldComponentUpdate: function() {
+    // We basically never want to rerender as the canvas can clear itself.
     return false;
   },
 
@@ -75,8 +75,21 @@ var Screen = React.createClass({
 
   render: function() {
     return (
-      <canvas className="oscilloscope col-full de-pad" height="auto" width="inherit" onClick={this.handleClick}></canvas>
+      <canvas className="col-full de-pad"
+              height="auto"
+              width="inherit"
+              style={{border: "1px solid"}}
+              onClick={this.handleClick}>
+      </canvas>
     );
+  },
+
+  _curves: function() {
+    return this.state.curves;
+  },
+
+  _canvas: function() {
+    return this.state.canvas;
   }
 });
 

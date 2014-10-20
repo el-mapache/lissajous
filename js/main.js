@@ -50,13 +50,7 @@ var controls = [
 var React = require('react');
 var Casing = require('./components/casing.js');
 var ControlGroup = require('./components/controls/controls.js');
-var Screen = require('./components/screen.js');
-var Lissajous = require('./lissajous.js');
-
-var Color = require('./colors.js');
 var Canvas = require('./canvas.js');
-
-
 
 React.renderComponent(
   <Casing canvas={Canvas} curves={[]} count={0} />,

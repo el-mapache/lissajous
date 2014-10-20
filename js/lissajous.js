@@ -3,8 +3,14 @@
 */
 
 var Lissajous = function(width, height) {
-  var VALID_OPERATORS = ['+', '*'];
-  var scale = 1.5;
+  var PI = Math.PI;
+  var ROTATIONS = {
+    'circle': PI / 2,
+    'parabola': PI / 4,
+    'wave': PI / 180
+  };
+
+  var scale = 12.5;
   var x = 2;
   var y = 3;
   var time = 0;
@@ -12,9 +18,10 @@ var Lissajous = function(width, height) {
   var radius = 1;
   var startVector = {};
   var amplitude = (height / scale) < (width / scale) ? height / scale : width / scale;
-  var PI = Math.PI;
-  var DOUBLE_PI = PI * 2;
-  var SLASHED_ZERO_A = PI / 180;
+
+  var DOUBLE_PI = PI * 2; // useful only with a plus
+
+   var SLASHED_ZERO_A = PI / 180; // wave
 
   var CIRCLE = PI / 2;
   var PARABOLA = PI / 4;
@@ -55,13 +62,13 @@ var Lissajous = function(width, height) {
       return period;
     }
 
-    return fn(period, rotation);
+    return fn(period, ROTATIONS[rotation]);
   }
 
   // Where curve is defined as the inital value optionally rotated
   // by some fixed amount.
   function buildCurve(period) {
-    return amplitude * Math.sin(period * SLASHED_ZERO_A);
+    return amplitude * Math.sin(period);
   }
 
   // Dampens the motion of one point of a vector.
@@ -86,9 +93,17 @@ var Lissajous = function(width, height) {
     return prop;
   };
 
-  this.transform = function(value, time) {
+  this.transform = function(value, time, rotation) {
+    // if (rotation) {
+    //   return amplitude * Math.sin(rotateBy(initialPeriod(value, time), '+', rotation));
+    // }
+
     return buildCurve(initialPeriod(value, time));
     //return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
+  };
+
+  this.lobes = function() {
+    return (x / y) * 100;
   };
 };
 

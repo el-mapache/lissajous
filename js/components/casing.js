@@ -15,7 +15,7 @@ var Casing = React.createClass({
   },
 
   handleClick: function() {
-    // register a new lissajous curve object
+    // register a lissajous curve function to be instantiated.
     var curve = Lissajous;
     var nextCurve = this.state.curves.concat([curve]);
     this.setState({ curves: nextCurve });

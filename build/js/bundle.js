@@ -1,8 +1,18 @@
 require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Colors = require('./colors.js');
 
+// Adjustable drawing properties passed in to draw.
+var VALID_PROPS = [
+  'lineWidth',
+  'strokeStyle',
+  'shadowBlur',
+  'shadowColor',
+  'shadowOffsetX',
+  'shadowOffsetY'
+];
+
 var Canvas = function(el) {
-  this.canvas = typeof el === "String" ? document.querySelector(el) : el;
+  this.canvas = typeof el === "string" ? document.querySelector(el) : el;
   this.ctx = null;
   this.halfWidth = null;
   this.halfHeight = null;
@@ -21,25 +31,26 @@ Canvas.prototype.drawArc = function(start, end, radius) {
   ctx.beginPath();
 
   if (start) {
-   // ctx.moveTo(start.x + hw, start.y + hh);
-    ctx.moveTo(start.x - (hw/4), start.y - (hh/4));
+    ctx.moveTo(start.x + hw, start.y + hh);
+    //ctx.moveTo(start.x - (hw), start.y - (hh));
   }
+
   var color = Colors.getDirectionalColor(x, y);
 
   ctx.arcTo(x + hw, y + hh, radius, 0, 0);
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 1; // 5
   ctx.closePath();
   ctx.strokeStyle = color;
-  ctx.shadowBlur = 30;
-  ctx.shadowColor = color;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 0;
+ // ctx.shadowBlur = 30;
+ // ctx.shadowColor = color;
+ // ctx.shadowOffsetX = 0;
+ // ctx.shadowOffsetY = 0;
   ctx.stroke();
 };
 
 Canvas.prototype._init = function() {
   if (!('getContext' in this.canvas)) {
-    alert('Your browser doesnt support this.')
+    alert('Your browser doesnt support canvas.')
   }
 
   this.ctx = this.canvas.getContext('2d');
@@ -55,7 +66,7 @@ Canvas.prototype._init = function() {
 Canvas.prototype._scale = function() {
   var scalingRatio = window.devicePixelRatio;
 
-  // Wer are on a standard res screen and dont need to scale.
+  // We are on a standard res screen shouldn't scale.
   if (scalingRatio === 1) {
     return;
   }
@@ -66,8 +77,8 @@ Canvas.prototype._scale = function() {
   this.canvas.width = oldWidth * scalingRatio;
   this.canvas.height = oldHeight * scalingRatio;
 
-  this.canvas.style.width = oldWidth+"px";
-  this.canvas.style.height = oldHeight+"px";
+  this.canvas.style.width = oldWidth + "px";
+  this.canvas.style.height = oldHeight + "px";
 
   this.ctx.scale(scalingRatio, scalingRatio);
 };
@@ -151,7 +162,7 @@ var Casing = React.createClass({displayName: 'Casing',
   },
 
   handleClick: function() {
-    // register a new lissajous curve object
+    // register a lissajous curve function to be instantiated.
     var curve = Lissajous;
     var nextCurve = this.state.curves.concat([curve]);
     this.setState({ curves: nextCurve });
@@ -175,6 +186,7 @@ var Casing = React.createClass({displayName: 'Casing',
 });
 
 module.exports = Casing;
+
 },{"../lissajous.js":8,"./lissajous-collection.js":5,"./screen.js":6,"react":"CwoHg3"}],4:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react');
@@ -240,7 +252,7 @@ module.exports = ControlGroup;
 /** @jsx React.DOM */
 
 var React = require('react');
-
+//style={{"border-left": "2px solid orange"}}
 var LissajousCollection = React.createClass({displayName: 'LissajousCollection',
   render: function() {
     var _curves = [];
@@ -250,25 +262,35 @@ var LissajousCollection = React.createClass({displayName: 'LissajousCollection',
     });
 
 		return (
-      React.DOM.div({className: "col-1-4 offset-1-8", style: {"border-left": "2px solid orange"}}, 
+      React.DOM.div({className: "col-1-4 offset-1-8"}, 
         _curves
       )
     );
 	}
 });
 
-var styles = {
-  background: "rgb(98,194,229)",
-  color: "#efefef",
-  padding: "4px",
-  letterSpacing: "0.05em"
-};
+// var styles = {
+//   background: "rgb(98,194,229)",
+//   color: "#efefef",
+//   padding: "4px",
+//   letterSpacing: "0.05em"
+// };
 
 var LissajousView = React.createClass({displayName: 'LissajousView',
+  getInitialState: function() {
+    return {
+      x: 2,
+      y: 3,
+      timeStep: 1,
+      scale: 10,
+      phase: 'circle'
+    };
+  },
+
   render: function() {
     return (
       React.DOM.div({className: "grid"}, 
-        React.DOM.div({className: "col-5-8", style: styles}, 
+        React.DOM.div({className: "col-5-8"}, 
           "Lissajous ", this.props.key
         )
       )
@@ -292,8 +314,8 @@ var draw = function(vector, lastVector, curve) {
 
   lastVector = vector;
   vector = {
-    x: curve.transform(1, time),
-    y: curve.transform(2,time)
+    x: curve.transform(1, time, 'circle'),
+    y: curve.transform(2, time)
   };
 
   this._canvas().drawArc(lastVector, vector, 1);
@@ -302,15 +324,17 @@ var draw = function(vector, lastVector, curve) {
     window.requestAnimationFrame(draw.bind(this, vector, lastVector, curve));
   } else {
     time = 0;
-    window.cancelAnimationFrame(this.longId);
+    window.cancelAnimationFrame(this.state.animationId);
+    this.setState({animationId: null});
   }
 };
 
 var Screen = React.createClass({displayName: 'Screen',
-  longId: null,
   getInitialState: function() {
     return {
-      curves: this.props.curves
+      curves:      this.props.curves,
+      isAnimating: false,
+      animationId: null
     };
   },
 
@@ -320,17 +344,8 @@ var Screen = React.createClass({displayName: 'Screen',
     });
   },
 
-  _curves: function() {
-    return this.state.curves;
-  },
-
-  _canvas: function() {
-    return this.state.canvas;
-  },
-
-  shouldComponentUpdate: function(newState, oldState) {
-    //perform animations, but dont rerender
-    var curves = newState.curves;
+  componentWillReceiveProps: function(nextState) {
+    var curves = nextState.curves;
 
     if (curves.length === 0) {
       return true;
@@ -342,8 +357,15 @@ var Screen = React.createClass({displayName: 'Screen',
     var vector     = {x: 0, y: 0},
         lastVector = null;
 
-    this.longId = window.requestAnimationFrame(draw.bind(this, vector, lastVector, curve));
+    var id = window.requestAnimationFrame(draw.bind(this, vector, lastVector, curve));
 
+    this.setState({
+      animationId: id
+    });
+  },
+
+  shouldComponentUpdate: function() {
+    // We basically never want to rerender as the canvas can clear itself.
     return false;
   },
 
@@ -359,8 +381,21 @@ var Screen = React.createClass({displayName: 'Screen',
 
   render: function() {
     return (
-      React.DOM.canvas({className: "oscilloscope col-full de-pad", height: "auto", width: "inherit", onClick: this.handleClick})
+      React.DOM.canvas({className: "col-full de-pad", 
+              height: "auto", 
+              width: "inherit", 
+              style: {border: "1px solid"}, 
+              onClick: this.handleClick}
+      )
     );
+  },
+
+  _curves: function() {
+    return this.state.curves;
+  },
+
+  _canvas: function() {
+    return this.state.canvas;
   }
 });
 
@@ -419,27 +454,27 @@ var controls = [
 var React = require('react');
 var Casing = require('./components/casing.js');
 var ControlGroup = require('./components/controls/controls.js');
-var Screen = require('./components/screen.js');
-var Lissajous = require('./lissajous.js');
-
-var Color = require('./colors.js');
 var Canvas = require('./canvas.js');
-
-
 
 React.renderComponent(
   Casing({canvas: Canvas, curves: [], count: 0}),
   document.body
 );
 
-},{"./canvas.js":1,"./colors.js":2,"./components/casing.js":3,"./components/controls/controls.js":4,"./components/screen.js":6,"./lissajous.js":8,"react":"CwoHg3"}],8:[function(require,module,exports){
+},{"./canvas.js":1,"./components/casing.js":3,"./components/controls/controls.js":4,"react":"CwoHg3"}],8:[function(require,module,exports){
 /*
   * Defines the set of transformations needed to create a lissajous curve.
 */
 
 var Lissajous = function(width, height) {
-  var VALID_OPERATORS = ['+', '*'];
-  var scale = 1.5;
+  var PI = Math.PI;
+  var ROTATIONS = {
+    'circle': PI / 2,
+    'parabola': PI / 4,
+    'wave': PI / 180
+  };
+
+  var scale = 12.5;
   var x = 2;
   var y = 3;
   var time = 0;
@@ -447,9 +482,10 @@ var Lissajous = function(width, height) {
   var radius = 1;
   var startVector = {};
   var amplitude = (height / scale) < (width / scale) ? height / scale : width / scale;
-  var PI = Math.PI;
-  var DOUBLE_PI = PI * 2;
-  var SLASHED_ZERO_A = PI / 180;
+
+  var DOUBLE_PI = PI * 2; // useful only with a plus
+
+   var SLASHED_ZERO_A = PI / 180; // wave
 
   var CIRCLE = PI / 2;
   var PARABOLA = PI / 4;
@@ -490,13 +526,13 @@ var Lissajous = function(width, height) {
       return period;
     }
 
-    return fn(period, rotation);
+    return fn(period, ROTATIONS[rotation]);
   }
 
   // Where curve is defined as the inital value optionally rotated
   // by some fixed amount.
   function buildCurve(period) {
-    return amplitude * Math.sin(period * SLASHED_ZERO_A);
+    return amplitude * Math.sin(period);
   }
 
   // Dampens the motion of one point of a vector.
@@ -521,9 +557,17 @@ var Lissajous = function(width, height) {
     return prop;
   };
 
-  this.transform = function(value, time) {
+  this.transform = function(value, time, rotation) {
+    // if (rotation) {
+    //   return amplitude * Math.sin(rotateBy(initialPeriod(value, time), '+', rotation));
+    // }
+
     return buildCurve(initialPeriod(value, time));
     //return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
+  };
+
+  this.lobes = function() {
+    return (x / y) * 100;
   };
 };
 
