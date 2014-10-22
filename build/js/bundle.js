@@ -283,7 +283,8 @@ var LissajousView = React.createClass({displayName: 'LissajousView',
       y: 3,
       timeStep: 1,
       scale: 10,
-      phase: 'circle'
+      phase: 'wave',
+      operator: '*'
     };
   },
 
@@ -314,8 +315,8 @@ var draw = function(vector, lastVector, curve) {
 
   lastVector = vector;
   vector = {
-    x: curve.transform(1, time, 'circle'),
-    y: curve.transform(2, time)
+    x: curve.transform(1, time, 'wave'),
+    y: curve.transform(2, time, 'wave')
   };
 
   this._canvas().drawArc(lastVector, vector, 1);
@@ -466,52 +467,50 @@ React.renderComponent(
   * Defines the set of transformations needed to create a lissajous curve.
 */
 
+var PI = Math.PI;
+var SIN = Math.sin;
+
+var ROTATIONS = {
+  'circle': PI / 2,
+  'parabola': PI / 4,
+  'wave': PI / 180
+};
+
+var OPERATORS = {
+  '+': function add(a, b) {
+    return a + b;
+  },
+
+  '*': function mult(a, b) {
+    return a *b;
+  }
+};
+
+
+var LissajousComponent = function(options) {
+  options = options || {};
+
+  this.value = options.value || 0;
+  this.damping = options.damping || -0.004;
+  this.dampen = options.dampen || false;
+  this.rotation = options.rotation;
+  this.operator = options.operator || null;
+};
+
 var Lissajous = function(width, height) {
-  var PI = Math.PI;
-  var ROTATIONS = {
-    'circle': PI / 2,
-    'parabola': PI / 4,
-    'wave': PI / 180
-  };
+  this.scale = 12.5;
+  this.timeStep = 5;
+
+  this.widthComponent = new LissajousComponent({value: 2, operator: '+', rotation: 'circle'});
+  this.heightComponent = new LissajousComponent({value: 3});
 
   var scale = 12.5;
-  var x = 2;
-  var y = 3;
+
   var time = 0;
-  var timeStep = 1;
+
   var radius = 1;
-  var startVector = {};
   var amplitude = (height / scale) < (width / scale) ? height / scale : width / scale;
 
-  var DOUBLE_PI = PI * 2; // useful only with a plus
-
-   var SLASHED_ZERO_A = PI / 180; // wave
-
-  var CIRCLE = PI / 2;
-  var PARABOLA = PI / 4;
-
-  var xDamper = -0.004;
-  var yDamper = -0.004;
-  var SIN = Math.sin;
-
-  var OPERATORS = {
-    '+': function add(a, b) {
-      return a + b;
-    },
-
-    '*': function mult(a, b) {
-      return a *b;
-    }
-  };
-
-
-  function curry(fn) {
-    var args = [].slice.call(arguments,1);
-
-    return function() {
-      return fn.apply(this, args.concat([].slice.call(arguments,0)));
-    };
-  }
 
   // A point in time and space.
   function initialPeriod(value, time) {
@@ -532,7 +531,7 @@ var Lissajous = function(width, height) {
   // Where curve is defined as the inital value optionally rotated
   // by some fixed amount.
   function buildCurve(period) {
-    return amplitude * Math.sin(period);
+    return amplitude * SIN(period);
   }
 
   // Dampens the motion of one point of a vector.
@@ -541,7 +540,6 @@ var Lissajous = function(width, height) {
     return Math.pow(Math.E, damping * t) * point;
   }
 
-  this.timeStep = timeStep;
 
   this.get = function(prop) {
     return prop || null;
@@ -558,16 +556,18 @@ var Lissajous = function(width, height) {
   };
 
   this.transform = function(value, time, rotation) {
-    // if (rotation) {
-    //   return amplitude * Math.sin(rotateBy(initialPeriod(value, time), '+', rotation));
-    // }
+    if (rotation) {
+      return amplitude * SIN(rotateBy(initialPeriod(value, time), '*', rotation));
+    }
 
     return buildCurve(initialPeriod(value, time));
     //return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
   };
 
+  /* this.buildCurve -> output a vector that transforms both components */
+
   this.lobes = function() {
-    return (x / y) * 100;
+    return (this.widthComponent.value / this.heightComponent.value) * 100;
   };
 };
 

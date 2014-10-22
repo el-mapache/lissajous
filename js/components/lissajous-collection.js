@@ -32,7 +32,8 @@ var LissajousView = React.createClass({
       y: 3,
       timeStep: 1,
       scale: 10,
-      phase: 'circle'
+      phase: 'wave',
+      operator: '*'
     };
   },
 

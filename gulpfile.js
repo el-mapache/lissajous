@@ -4,6 +4,8 @@ var reactify = require('reactify');
 var rename = require("gulp-rename");
 var concat = require('gulp-concat');
 
+var express = require('express');
+
 var sass = require('gulp-sass');
 var minifycss = require('gulp-minify-css');
 var del = require('del');
@@ -44,6 +46,10 @@ gulp.task('watch', function() {
 });
 
 gulp.task('default', ['watch'], function() {
-  console.warn('GULP ACTIVE! Watching files');
+  var app = express();
+  app.use(express.static(__dirname));
+  app.listen(8888);
+
+  console.log('Starting server and watching files');
 })
 ;
