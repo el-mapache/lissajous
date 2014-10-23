@@ -7,10 +7,7 @@ var draw = function(vector, lastVector, curve) {
   time += curve.timeStep;
 
   lastVector = vector;
-  vector = {
-    x: curve.transform(1, time, 'wave'),
-    y: curve.transform(2, time, 'wave')
-  };
+  vector = curve.build(time);
 
   this._canvas().drawArc(lastVector, vector, 1);
 

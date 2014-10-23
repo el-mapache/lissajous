@@ -314,10 +314,7 @@ var draw = function(vector, lastVector, curve) {
   time += curve.timeStep;
 
   lastVector = vector;
-  vector = {
-    x: curve.transform(1, time, 'wave'),
-    y: curve.transform(2, time, 'wave')
-  };
+  vector = curve.build(time);
 
   this._canvas().drawArc(lastVector, vector, 1);
 
@@ -498,18 +495,14 @@ var LissajousComponent = function(options) {
 };
 
 var Lissajous = function(width, height) {
+  var lissajous = this;
+
   this.scale = 12.5;
   this.timeStep = 5;
+  this.amplitude = (height / this.scale) < (width / this.scale) ? height / this.scale : width / this.scale;
 
   this.widthComponent = new LissajousComponent({value: 2, operator: '+', rotation: 'circle'});
   this.heightComponent = new LissajousComponent({value: 3});
-
-  var scale = 12.5;
-
-  var time = 0;
-
-  var radius = 1;
-  var amplitude = (height / scale) < (width / scale) ? height / scale : width / scale;
 
 
   // A point in time and space.
@@ -531,7 +524,7 @@ var Lissajous = function(width, height) {
   // Where curve is defined as the inital value optionally rotated
   // by some fixed amount.
   function buildCurve(period) {
-    return amplitude * SIN(period);
+    return lissajous.amplitude * SIN(period);
   }
 
   // Dampens the motion of one point of a vector.
@@ -564,7 +557,18 @@ var Lissajous = function(width, height) {
     //return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
   };
 
-  /* this.buildCurve -> output a vector that transforms both components */
+
+  this.build = function(time) {
+    var vector = {x: 0, y: 0};
+
+    var xCh = this.widthComponent;
+    var yCh = this.heightComponent;
+
+    vector.x = this.amplitude * SIN(rotateBy(initialPeriod(xCh.value, time), xCh.operator, xCh.rotation));//buildCurve(initialPeriod(this.widthComponent.value, time));
+    vector.y = buildCurve(initialPeriod(yCh.value, time));
+
+    return vector
+  };
 
   this.lobes = function() {
     return (this.widthComponent.value / this.heightComponent.value) * 100;
