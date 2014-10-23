@@ -49,7 +49,7 @@ var controls = [
 
 var React = require('react');
 var Casing = require('./components/casing.js');
-var ControlGroup = require('./components/controls/controls.js');
+var ControlGroup = require('./components/controls.js');
 var Canvas = require('./canvas.js');
 
 React.renderComponent(

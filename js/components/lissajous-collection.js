@@ -28,12 +28,8 @@ var LissajousCollection = React.createClass({
 var LissajousView = React.createClass({
   getInitialState: function() {
     return {
-      x: 2,
-      y: 3,
       timeStep: 1,
-      scale: 10,
-      phase: 'wave',
-      operator: '*'
+      scale: 10
     };
   },
 
@@ -43,6 +39,35 @@ var LissajousView = React.createClass({
         <div className="col-5-8">
           Lissajous {this.props.key}
         </div>
+        <LissajousComponentView />
+      </div>
+    );
+  }
+});
+
+var LissajousComponentView = React.createClass({
+  getInitialState: function() {
+    return {
+      value: 0,
+      damping: -0.004,
+      dampen: false,
+      rotation: null,
+      operator: null
+    };
+  },
+
+  onInputChange: function(event) {
+    this.setState({
+      value: +event.target.value
+    });
+  },
+
+  render: function() {
+    return (
+      <div>
+        <label name="value">Value</label>
+        <input className="col-1-8" type="text" defaultValue="0" onChange={this.onInputChange} />
+        <span>{this.state.value}</span>
       </div>
     );
   }

@@ -222,6 +222,22 @@ var RangeControl = React.createClass({displayName: 'RangeControl',
   }
 });
 
+var InputControl = React.createClass({displayName: 'InputControl',
+  getInitialState: function() {
+    return {
+      value: this.props.data.value
+    };
+  },
+
+  render: function() {
+    return (
+      React.DOM.div(null, 
+        React.DOM.label(null), 
+        React.DOM.input(null)
+      )
+    );
+  }
+});
 
 
 var controlTypes = {
@@ -279,12 +295,8 @@ var LissajousCollection = React.createClass({displayName: 'LissajousCollection',
 var LissajousView = React.createClass({displayName: 'LissajousView',
   getInitialState: function() {
     return {
-      x: 2,
-      y: 3,
       timeStep: 1,
-      scale: 10,
-      phase: 'wave',
-      operator: '*'
+      scale: 10
     };
   },
 
@@ -293,7 +305,36 @@ var LissajousView = React.createClass({displayName: 'LissajousView',
       React.DOM.div({className: "grid"}, 
         React.DOM.div({className: "col-5-8"}, 
           "Lissajous ", this.props.key
-        )
+        ), 
+        LissajousComponentView(null)
+      )
+    );
+  }
+});
+
+var LissajousComponentView = React.createClass({displayName: 'LissajousComponentView',
+  getInitialState: function() {
+    return {
+      value: 0,
+      damping: -0.004,
+      dampen: false,
+      rotation: null,
+      operator: null
+    };
+  },
+
+  onInputChange: function(event) {
+    this.setState({
+      value: +event.target.value
+    });
+  },
+
+  render: function() {
+    return (
+      React.DOM.div(null, 
+        React.DOM.label({name: "value"}, "Value"), 
+        React.DOM.input({className: "col-1-8", type: "text", defaultValue: "0", onChange: this.onInputChange}), 
+        React.DOM.span(null, this.state.value)
       )
     );
   }
@@ -315,6 +356,12 @@ var draw = function(vector, lastVector, curve) {
 
   lastVector = vector;
   vector = curve.build(time);
+//    vector = {
+
+
+//    x: curve.transform(1, time, 'wave'),
+//    y: curve.transform(2, time, 'wave')
+//   };
 
   this._canvas().drawArc(lastVector, vector, 1);
 
@@ -451,7 +498,7 @@ var controls = [
 
 var React = require('react');
 var Casing = require('./components/casing.js');
-var ControlGroup = require('./components/controls/controls.js');
+var ControlGroup = require('./components/controls.js');
 var Canvas = require('./canvas.js');
 
 React.renderComponent(
@@ -459,7 +506,7 @@ React.renderComponent(
   document.body
 );
 
-},{"./canvas.js":1,"./components/casing.js":3,"./components/controls/controls.js":4,"react":"CwoHg3"}],8:[function(require,module,exports){
+},{"./canvas.js":1,"./components/casing.js":3,"./components/controls.js":4,"react":"CwoHg3"}],8:[function(require,module,exports){
 /*
   * Defines the set of transformations needed to create a lissajous curve.
 */
@@ -470,7 +517,8 @@ var SIN = Math.sin;
 var ROTATIONS = {
   'circle': PI / 2,
   'parabola': PI / 4,
-  'wave': PI / 180
+  'wave': PI / 180,
+  'none': 0
 };
 
 var OPERATORS = {
@@ -482,7 +530,6 @@ var OPERATORS = {
     return a *b;
   }
 };
-
 
 var LissajousComponent = function(options) {
   options = options || {};
@@ -501,8 +548,17 @@ var Lissajous = function(width, height) {
   this.timeStep = 5;
   this.amplitude = (height / this.scale) < (width / this.scale) ? height / this.scale : width / this.scale;
 
-  this.widthComponent = new LissajousComponent({value: 2, operator: '+', rotation: 'circle'});
-  this.heightComponent = new LissajousComponent({value: 3});
+  this.widthComponent = new LissajousComponent({
+    value: 1,
+    operator: '*',
+    rotation: 'wave'
+  });
+
+  this.heightComponent = new LissajousComponent({
+    value: 2,
+    operator: '*',
+    rotation: 'wave'
+  });
 
 
   // A point in time and space.
@@ -524,7 +580,7 @@ var Lissajous = function(width, height) {
   // Where curve is defined as the inital value optionally rotated
   // by some fixed amount.
   function buildCurve(period) {
-    return lissajous.amplitude * SIN(period);
+    return lissajous.amplitude * Math.sin(period);
   }
 
   // Dampens the motion of one point of a vector.
@@ -550,11 +606,10 @@ var Lissajous = function(width, height) {
 
   this.transform = function(value, time, rotation) {
     if (rotation) {
-      return amplitude * SIN(rotateBy(initialPeriod(value, time), '*', rotation));
+      return lissajous.amplitude * SIN(rotateBy(initialPeriod(value, time), '*', rotation));
     }
 
     return buildCurve(initialPeriod(value, time));
-    //return dampen(buildCurve(rotateBy(initialPeriod(value, time),'*', DOUBLE_PI)),time);
   };
 
 
@@ -564,10 +619,10 @@ var Lissajous = function(width, height) {
     var xCh = this.widthComponent;
     var yCh = this.heightComponent;
 
-    vector.x = this.amplitude * SIN(rotateBy(initialPeriod(xCh.value, time), xCh.operator, xCh.rotation));//buildCurve(initialPeriod(this.widthComponent.value, time));
-    vector.y = buildCurve(initialPeriod(yCh.value, time));
+    vector.x = lissajous.amplitude * Math.sin(rotateBy(initialPeriod(xCh.value, time), xCh.operator, xCh.rotation));
+    vector.y = lissajous.amplitude * SIN(rotateBy(initialPeriod(yCh.value, time), yCh.operator, yCh.rotation));
 
-    return vector
+    return vector;
   };
 
   this.lobes = function() {
