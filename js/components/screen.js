@@ -8,12 +8,6 @@ var draw = function(vector, lastVector, curve) {
 
   lastVector = vector;
   vector = curve.build(time);
-//    vector = {
-
-
-//    x: curve.transform(1, time, 'wave'),
-//    y: curve.transform(2, time, 'wave')
-//   };
 
   this._canvas().drawArc(lastVector, vector, 1);
 

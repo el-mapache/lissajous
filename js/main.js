@@ -47,10 +47,27 @@ var controls = [
   }
 ];
 
+var input = {
+  input: {
+    type: 'text',
+    defaultValue: 2,
+    className: "col-1-8",
+    name: "value",
+    value: 2
+  },
+  label: {
+    htmlFor: "value",
+    text: "Value"
+  }
+};
+
+window.a = React
 var React = require('react');
 var Casing = require('./components/casing.js');
 var ControlGroup = require('./components/controls.js');
 var Canvas = require('./canvas.js');
+var Framework = require('./framework.js');
+
 
 React.renderComponent(
   <Casing canvas={Canvas} curves={[]} count={0} />,

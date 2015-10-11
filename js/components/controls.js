@@ -32,22 +32,7 @@ var RangeControl = React.createClass({
   }
 });
 
-var InputControl = React.createClass({
-  getInitialState: function() {
-    return {
-      value: this.props.data.value
-    };
-  },
 
-  render: function() {
-    return (
-      <div>
-        <label></label>
-        <input />
-      </div>
-    );
-  }
-});
 
 
 var controlTypes = {

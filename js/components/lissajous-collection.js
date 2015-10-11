@@ -1,13 +1,15 @@
 /** @jsx React.DOM */
 
 var React = require('react');
+var Input = require('./input.js');
+
 //style={{"border-left": "2px solid orange"}}
 var LissajousCollection = React.createClass({
   render: function() {
     var _curves = [];
 
     this.props.curves.forEach(function(obj,i) {
-      _curves.push(LissajousView({key: i+1}));
+      _curves.push(LissajousView({key: i+1, model: obj}));
     });
 
 		return (
@@ -29,7 +31,8 @@ var LissajousView = React.createClass({
   getInitialState: function() {
     return {
       timeStep: 1,
-      scale: 10
+      scale: 10,
+      model: this.props.model
     };
   },
 
@@ -39,35 +42,51 @@ var LissajousView = React.createClass({
         <div className="col-5-8">
           Lissajous {this.props.key}
         </div>
-        <LissajousComponentView />
+        <LissajousComponentView model={this.props.model.widthComponent} />
       </div>
     );
   }
 });
 
+var input = {
+  input: {
+    type: 'text',
+    defaultValue: 0,
+    className: "col-1-8",
+    name: "value"
+  },
+  label: {
+    htmlFor: "value",
+    text: "Value"
+  }
+};
+
 var LissajousComponentView = React.createClass({
   getInitialState: function() {
     return {
-      value: 0,
-      damping: -0.004,
-      dampen: false,
-      rotation: null,
-      operator: null
+      model: this.props.model
     };
   },
 
   onInputChange: function(event) {
+    this.state.model.set('value', +event.target.value);
+  },
+
+  onDampenClick: function() {
     this.setState({
-      value: +event.target.value
-    });
+      dampen: this.state.dampen ? false : true
+    })
   },
 
   render: function() {
+    var model = this.state.model;
     return (
       <div>
-        <label name="value">Value</label>
-        <input className="col-1-8" type="text" defaultValue="0" onChange={this.onInputChange} />
-        <span>{this.state.value}</span>
+        <Input data={input} value={model.get('value')} onChange={this.onInputChange} />
+        <button type="button" onClick={this.onDampenClick}>Dampening: {this.state.dampen ? 'On': 'Off'}</button>
+        <select>
+          <option></option>
+        </select>
       </div>
     );
   }

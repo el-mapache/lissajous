@@ -2,6 +2,8 @@
   * Defines the set of transformations needed to create a lissajous curve.
 */
 
+var Framework = require('./framework.js');
+
 var PI = Math.PI;
 var SIN = Math.sin;
 
@@ -22,15 +24,15 @@ var OPERATORS = {
   }
 };
 
-var LissajousComponent = function(options) {
-  options = options || {};
-
-  this.value = options.value || 0;
-  this.damping = options.damping || -0.004;
-  this.dampen = options.dampen || false;
-  this.rotation = options.rotation;
-  this.operator = options.operator || null;
-};
+var LissajousComponent = Framework.Model.extend({
+  defaults: {
+    value:    0,
+    damping:  -0.004,
+    dampen:   false,
+    rotation: null,
+    operator: null
+  }
+});
 
 var Lissajous = function(width, height) {
   var lissajous = this;
@@ -107,8 +109,8 @@ var Lissajous = function(width, height) {
   this.build = function(time) {
     var vector = {x: 0, y: 0};
 
-    var xCh = this.widthComponent;
-    var yCh = this.heightComponent;
+    var xCh = this.widthComponent.data();
+    var yCh = this.heightComponent.data();
 
     vector.x = lissajous.amplitude * Math.sin(rotateBy(initialPeriod(xCh.value, time), xCh.operator, xCh.rotation));
     vector.y = lissajous.amplitude * SIN(rotateBy(initialPeriod(yCh.value, time), yCh.operator, yCh.rotation));
